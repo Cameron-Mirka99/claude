@@ -89,3 +89,63 @@ is one feature/functionality area, not a bucket like `components/`,
   (e.g. another shared-concerns folder alongside `util/`), check whether the
   project already has a place for that concern; don't fragment shared code
   across multiple ad-hoc shared folders.
+
+## 4. Control flow and function signatures
+
+- Limit nesting depth to ~3–4 levels of indentation. When a function nests
+  deeper than that, extract guard clauses / early returns instead of adding
+  another level — invert the condition and return/continue early rather than
+  wrapping the rest of the function in another `if`.
+- Cap function parameters at ~4–5. Beyond that, bundle related parameters
+  into a single options object/struct rather than adding another positional
+  argument.
+
+## 5. Naming and literals
+
+- No abbreviations or single-letter variable names, except tight loop
+  counters (`i`, `j` in a short loop) — spell names out.
+- Booleans read as questions: `isReady`, `hasPermission` — not `ready`,
+  `flag`.
+- Function names are verbs (`calculateTotal`, `fetchUser`); types/classes are
+  nouns (`Invoice`, `UserRepository`).
+- No magic numbers or strings — extract to a named constant that says what
+  the value means, even if it's only used once.
+
+## 6. Module boundaries
+
+- Avoid circular dependencies between feature folders (see the `src/`
+  layout in section 3). A feature-A-imports-feature-B-imports-feature-A cycle
+  means a boundary was drawn in the wrong place — extract the shared piece
+  into `src/util/`, or reconsider which feature actually owns it, rather than
+  importing back and forth.
+
+## 7. Error handling
+
+- No silent catch blocks. Every caught error is logged, re-thrown, or
+  explicitly handled — never swallowed in an empty `catch`/`except` with no
+  trace that it happened.
+
+## 8. Purity and state
+
+- Prefer pure functions (no hidden side effects) for anything doing
+  calculation or data transformation — same input, same output, no reaching
+  outside the function to read or mutate state.
+- Avoid global or mutable shared state. Pass dependencies explicitly
+  (parameters, constructor/function injection) instead of reaching for
+  module-level or singleton state.
+
+## 9. Testing
+
+- New logic gets a test alongside it in the same commit/PR — not filed as a
+  follow-up to add "later."
+
+## 10. Git hygiene
+
+- Keep commits small and single-purpose. Write commit messages that explain
+  *why* the change was made, not a restatement of what the diff shows.
+
+## 11. Comments and documentation
+
+- Comments explain *why*, never *what* — if removing a comment wouldn't
+  confuse a future reader, don't write it.
+- Every public function/API gets a one-line purpose description.
