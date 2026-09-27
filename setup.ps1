@@ -11,13 +11,13 @@
   - skills/<name>                       -> each skill folder is linked
     individually into ~/.claude/skills/<name>. ~/.claude/skills/synced is
     Anthropic's own managed bucket and is never touched.
-  - settings.json                       -> hard-linked to ~/.claude/settings.json
-    (junctions only work on directories, not files).
+  - settings.json, CLAUDE.md             -> hard-linked to their ~/.claude
+    counterparts (junctions only work on directories, not files).
 
   If a real (non-linked) file or folder already exists on the ~/.claude side
   with content, it is preserved: existing folder contents are merged into the
-  repo copy before linking, and an existing settings.json that differs from
-  the repo's is backed up next to it rather than overwritten.
+  repo copy before linking, and an existing file that differs from the
+  repo's is backed up next to it rather than overwritten.
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -101,9 +101,9 @@ function Link-Skill($SkillDir) {
     Write-Host "[+] Linked ~/.claude/skills/$name -> $repoPath"
 }
 
-function Link-SettingsFile {
-    $claudePath = Join-Path $ClaudeDir 'settings.json'
-    $repoPath = Join-Path $RepoRoot 'settings.json'
+function Link-File($Name) {
+    $claudePath = Join-Path $ClaudeDir $Name
+    $repoPath = Join-Path $RepoRoot $Name
 
     if (Test-Path $claudePath) {
         $sameContent = (Test-Path $repoPath) -and
@@ -116,25 +116,25 @@ function Link-SettingsFile {
         } catch {}
 
         if ($alreadyLinked) {
-            Write-Host "[ok] settings.json already linked."
+            Write-Host "[ok] $Name already linked."
             return
         }
 
         if (-not $sameContent -and (Test-Path $repoPath)) {
-            $backup = Join-Path $ClaudeDir "settings.pre-link-backup.json"
+            $backup = Join-Path $ClaudeDir "$Name.pre-link-backup"
             Copy-Item $claudePath $backup -Force
-            Write-Warning "[!] ~/.claude/settings.json differed from the repo copy - backed up to $backup before linking."
+            Write-Warning "[!] ~/.claude/$Name differed from the repo copy - backed up to $backup before linking."
         }
         Remove-Item $claudePath -Force
     }
 
     if (-not (Test-Path $repoPath)) {
-        Write-Warning "[!] No settings.json in repo to link from - skipping."
+        Write-Warning "[!] No $Name in repo to link from - skipping."
         return
     }
 
     cmd /c "mklink /H `"$claudePath`" `"$repoPath`"" | Out-Null
-    Write-Host "[+] Linked ~/.claude/settings.json -> $repoPath"
+    Write-Host "[+] Linked ~/.claude/$Name -> $repoPath"
 }
 
 Write-Host "Repo: $RepoRoot"
@@ -148,7 +148,9 @@ foreach ($folder in @('agents', 'commands', 'output-styles')) {
 New-Item -ItemType Directory -Path (Join-Path $RepoRoot 'skills') -Force | Out-Null
 Get-ChildItem -Path (Join-Path $RepoRoot 'skills') -Directory | ForEach-Object { Link-Skill $_ }
 
-Link-SettingsFile
+foreach ($file in @('settings.json', 'CLAUDE.md')) {
+    Link-File $file
+}
 
 Write-Host ""
 Write-Host "Done."

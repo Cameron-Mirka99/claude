@@ -10,6 +10,8 @@ and share between machines:
 - `commands/` — custom slash commands (linked as `~/.claude/commands`)
 - `output-styles/` — custom output styles (linked as `~/.claude/output-styles`)
 - `settings.json` — shared settings (hard-linked to `~/.claude/settings.json`)
+- `CLAUDE.md` — global instructions applied on every project, every machine
+  (hard-linked to `~/.claude/CLAUDE.md`)
 
 Deliberately **excluded**: credentials, session history, transcripts, cache,
 and anything else in `~/.claude` that's per-machine or sensitive. Those stay
