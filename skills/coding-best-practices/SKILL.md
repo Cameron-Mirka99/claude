@@ -34,3 +34,32 @@ reassess, not a hard cutoff to squeeze under with denser code.
 - When a split happens, wire up imports/exports cleanly and don't leave the
   original file as a thin re-export shim unless the language/ecosystem
   idiomatically expects one (e.g. a package's public `index`).
+
+## 2. Keep functions small and single-purpose
+
+Target: no function/method over ~20 lines. Treat 20 as a trigger to stop and
+reassess, not a hard cutoff to squeeze under by deleting whitespace or
+cramming statements onto one line.
+
+- **Before editing an existing function**, check its current length. If it's
+  already near or over ~20 lines and the task adds meaningfully more logic,
+  extract before piling on.
+- **Before writing a new function**, if it's clearly going to run long,
+  design it as a small orchestrating function calling out to smaller helpers
+  from the start.
+- Extract along responsibility boundaries, not arbitrary line cuts: a
+  distinct step in a larger process, a repeated block, a validation/parsing
+  chunk, a branch of a conditional that's really its own concern. Each
+  extracted function should be nameable with a precise verb phrase that says
+  exactly what it does ("validates X", "parses Y into Z") — if you can't name
+  it concisely, it's not a clean extraction yet.
+- Use judgment: a long-but-flat sequence with no real sub-steps (e.g. a
+  straight-line list of similar field assignments, a big but simple switch/
+  match), or a function that's long only because of language boilerplate, is
+  fine to leave alone. The goal is functions that each do one clear thing —
+  not hitting a number for its own sake. Don't fragment a single cohesive
+  operation into artificial pieces just to satisfy the count.
+- Name extracted helpers for what they do, not how they relate to the caller
+  (`calculate_tax`, not `helper_1` or `do_part_of_process`), and keep their
+  parameter lists honest — if an extraction needs eight parameters to work,
+  the boundary was probably drawn in the wrong place.
