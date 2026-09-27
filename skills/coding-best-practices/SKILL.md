@@ -63,3 +63,29 @@ cramming statements onto one line.
   (`calculate_tax`, not `helper_1` or `do_part_of_process`), and keep their
   parameter lists honest — if an extraction needs eight parameters to work,
   the boundary was probably drawn in the wrong place.
+
+## 3. Organize src by functionality, not by file type
+
+`src/` should read as a table of contents for the app: each top-level folder
+is one feature/functionality area, not a bucket like `components/`,
+`services/`, or `handlers/` shared across unrelated features.
+
+- Layout: `src/<feature>/...` for each distinct piece of functionality —
+  someone should be able to tell what the app does just from the list of
+  folders under `src/`.
+- **Per-feature utilities**: inside a feature folder, put helper
+  functions/types that only that feature uses in `src/<feature>/util/`
+  (match the casing convention already used elsewhere in that codebase —
+  don't introduce a new casing style just for this).
+- **Shared utilities**: as soon as a second, unrelated feature needs the same
+  helper, promote it out of the feature-local `util/` folder into the
+  top-level `src/util/` — that top-level folder is for code genuinely shared
+  across two or more features, not a dumping ground for anything vaguely
+  "utility". A helper used by only one feature stays local to it, even if it
+  feels generic.
+- When promoting a util, update its imports at every call site and delete the
+  now-unused feature-local copy — don't leave both versions around.
+- Before adding a new top-level folder under `src/` that isn't a feature
+  (e.g. another shared-concerns folder alongside `util/`), check whether the
+  project already has a place for that concern; don't fragment shared code
+  across multiple ad-hoc shared folders.
