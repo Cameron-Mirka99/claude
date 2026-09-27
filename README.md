@@ -8,7 +8,10 @@ and share between machines:
 - `skills/` — custom skills (each linked individually into `~/.claude/skills/<name>`)
 - `agents/` — custom subagents (linked as `~/.claude/agents`)
 - `commands/` — custom slash commands (linked as `~/.claude/commands`)
-- `output-styles/` — custom output styles (linked as `~/.claude/output-styles`)
+- `output-styles/` — custom output styles (linked as `~/.claude/output-styles`).
+  `caveman.md` is the active default (`settings.json`'s `outputStyle`) — terse
+  by default, reverts to normal prose on request to elaborate. Adapted from
+  the trigger-based `skills/caveman/` skill below.
 - `settings.json` — shared settings (linked to `~/.claude/settings.json`)
 - `CLAUDE.md` — global instructions applied on every project, every machine
   (linked to `~/.claude/CLAUDE.md`)

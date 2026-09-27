@@ -1,4 +1,5 @@
 {
   "autoUpdatesChannel": "latest",
-  "theme": "dark"
+  "theme": "dark",
+  "outputStyle": "Caveman"
 }
